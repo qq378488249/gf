@@ -20,6 +20,7 @@ type cGen struct {
 	cGenDao
 	cGenEnums
 	cGenCtrl
+	cGenCrud
 	cGenPb
 	cGenPbEntity
 	cGenService
@@ -29,7 +30,7 @@ const (
 	cGenBrief = `automatically generate go files for dao/do/entity/pb/pbentity`
 	cGenDc    = `
 The "gen" command is designed for multiple generating purposes. 
-It's currently supporting generating go files for ORM models, protobuf and protobuf entity files.
+It's currently supporting generating go files for ORM models, CRUD operations, protobuf and protobuf entity files.
 Please use "gf gen dao -h" for specified type help.
 `
 )

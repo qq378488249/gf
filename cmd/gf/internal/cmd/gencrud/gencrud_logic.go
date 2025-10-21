@@ -48,7 +48,7 @@ func (g *logicGenerator) Generate(table *tableInfo, dir, packageName string, ove
 	}
 
 	content := g.generateContent(table, packageName)
-	
+
 	if err := gfile.PutContents(filePath, content); err != nil {
 		return err
 	}

@@ -44,7 +44,7 @@ func (g *logicGenerator) Generate(table *tableInfo, dir, packageName string, ove
 
 	// Determine package name
 	if packageName == "" {
-		packageName = strings.ToLower(table.StructName)
+		packageName = gstr.CaseSnake(table.StructName)
 	}
 
 	content := g.generateContent(table, packageName)
@@ -59,8 +59,8 @@ func (g *logicGenerator) Generate(table *tableInfo, dir, packageName string, ove
 
 func (g *logicGenerator) generateContent(table *tableInfo, packageName string) string {
 	var (
-		structName      = table.StructName
-		structNameLower = strings.ToLower(structName)
+		structName          = table.StructName
+		structNameCaseSnake = gstr.CaseSnake(structName)
 	)
 
 	template := `// Copyright GoFrame gf Author(https://goframe.org). All Rights Reserved.
@@ -74,7 +74,7 @@ package {{.PackageName}}
 import (
 	"context"
 
-	"{{.ModuleName}}/api/{{.StructNameLower}}/v1"
+	"{{.ModuleName}}/api/{{.StructNameCaseSnake}}/v1"
 	"{{.ModuleName}}/internal/dao"
 	"{{.ModuleName}}/internal/model/entity"
 	"{{.ModuleName}}/internal/service"
@@ -92,7 +92,7 @@ func New() service.I{{.StructName}} {
 	return &s{{.StructName}}{}
 }
 
-// Create creates a new {{.StructNameLower}} record
+// Create creates a new {{.StructNameCaseSnake}} record
 func (s *s{{.StructName}}) Create(ctx context.Context, req *v1.CreateReq) (*v1.CreateRes, error) {
 	// TODO: Add business logic here before creating the record
 	// For example: validation, data transformation, etc.
@@ -113,7 +113,7 @@ func (s *s{{.StructName}}) Create(ctx context.Context, req *v1.CreateReq) (*v1.C
 	}, nil
 }
 
-// Delete deletes a {{.StructNameLower}} record by ID
+// Delete deletes a {{.StructNameCaseSnake}} record by ID
 func (s *s{{.StructName}}) Delete(ctx context.Context, req *v1.DeleteReq) (*v1.DeleteRes, error) {
 	// TODO: Add business logic here before deleting the record
 	// For example: permission checks, related data cleanup, etc.
@@ -126,7 +126,7 @@ func (s *s{{.StructName}}) Delete(ctx context.Context, req *v1.DeleteReq) (*v1.D
 	return &v1.DeleteRes{}, nil
 }
 
-// Update updates a {{.StructNameLower}} record
+// Update updates a {{.StructNameCaseSnake}} record
 func (s *s{{.StructName}}) Update(ctx context.Context, req *v1.UpdateReq) (*v1.UpdateRes, error) {
 	// TODO: Add business logic here before updating the record
 	// For example: validation, data transformation, permission checks, etc.
@@ -139,7 +139,7 @@ func (s *s{{.StructName}}) Update(ctx context.Context, req *v1.UpdateReq) (*v1.U
 	return &v1.UpdateRes{}, nil
 }
 
-// GetOne retrieves a {{.StructNameLower}} record by ID
+// GetOne retrieves a {{.StructNameCaseSnake}} record by ID
 func (s *s{{.StructName}}) GetOne(ctx context.Context, req *v1.GetOneReq) (*v1.GetOneRes, error) {
 	// TODO: Add business logic here before getting the record
 	// For example: permission checks, data filtering, etc.
@@ -155,7 +155,7 @@ func (s *s{{.StructName}}) GetOne(ctx context.Context, req *v1.GetOneReq) (*v1.G
 	}, nil
 }
 
-// GetList retrieves a list of {{.StructNameLower}} records
+// GetList retrieves a list of {{.StructNameCaseSnake}} records
 func (s *s{{.StructName}}) GetList(ctx context.Context, req *v1.GetListReq) (*v1.GetListRes, error) {
 	// TODO: Add business logic here before getting the list
 	// For example: permission checks, data filtering, search conditions, etc.
@@ -200,10 +200,10 @@ func (s *s{{.StructName}}) GetList(ctx context.Context, req *v1.GetListReq) (*v1
 	// Replace template variables
 	content := template
 	content = gstr.ReplaceByMap(content, map[string]string{
-		"{{.PackageName}}":     packageName,
-		"{{.StructName}}":      structName,
-		"{{.StructNameLower}}": structNameLower,
-		"{{.ModuleName}}":      getModuleName(),
+		"{{.PackageName}}":         packageName,
+		"{{.StructName}}":          structName,
+		"{{.StructNameCaseSnake}}": structNameCaseSnake,
+		"{{.ModuleName}}":          getModuleName(),
 	})
 
 	return content

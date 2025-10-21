@@ -299,7 +299,7 @@ func (c CGenCrud) generateFiles(table *tableInfo, in CGenCrudInput) error {
 	// Ensure directories exist
 	ctrlDir := gfile.Join(in.Path, in.CtrlPath)
 	serviceDir := gfile.Join(in.Path, in.ServicePath)
-	logicDir := gfile.Join(in.Path, in.LogicPath, strings.ToLower(table.StructName))
+	logicDir := gfile.Join(in.Path, in.LogicPath, gstr.CaseSnake(table.StructName))
 	apiDir := gfile.Join(in.Path, in.ApiPath)
 
 	if !gfile.Exists(ctrlDir) {

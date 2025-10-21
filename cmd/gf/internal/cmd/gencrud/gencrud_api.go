@@ -30,7 +30,7 @@ func (g *apiGenerator) Generate(table *tableInfo, dir, packageName string, overw
 	actions := []string{"create", "delete", "update", "get_one", "get_list", "interface"}
 	
 	// Create table subdirectory
-	tableDir := gfile.Join(dir, strings.ToLower(table.StructName))
+	tableDir := gfile.Join(dir, gstr.CaseSnake(table.StructName))
 	if !gfile.Exists(tableDir) {
 		if err := gfile.Mkdir(tableDir); err != nil {
 			return err
@@ -51,7 +51,7 @@ func (g *apiGenerator) Generate(table *tableInfo, dir, packageName string, overw
 		
 		if action == "interface" {
 			// 接口文件生成在表目录下
-			fileName = strings.ToLower(table.StructName) + ".go"
+			fileName = gstr.CaseSnake(table.StructName) + ".go"
 			filePath = gfile.Join(tableDir, fileName)
 		} else {
 			// 其他文件生成在v1目录下
@@ -82,9 +82,9 @@ func (g *apiGenerator) Generate(table *tableInfo, dir, packageName string, overw
 
 func (g *apiGenerator) generateActionContent(table *tableInfo, action string) string {
 	var (
-		structName      = table.StructName
-		structNameLower = strings.ToLower(structName)
-		packageName     = "v1"
+		structName          = table.StructName
+		structNameCaseSnake = gstr.CaseSnake(structName)
+		packageName         = "v1"
 	)
 
 	// Generate field information
@@ -133,12 +133,12 @@ import (
 
 type (
 	CreateReq struct {
-		g.Meta ` + "`" + `path:"/{{.StructNameLower}}" tags:"{{.StructName}}" method:"post" summary:"Create {{.StructNameLower}}"` + "`" + `
+		g.Meta ` + "`" + `path:"/{{.StructNameCaseSnake}}" tags:"{{.StructName}}" method:"post" summary:"Create {{.StructNameCaseSnake}}"` + "`" + `
 {{.NonPrimaryRequiredFields}}
 	}
 	CreateRes struct {
 		g.Meta ` + "`" + `mime:"application/json" example:"string"` + "`" + `
-		Id     {{.PrimaryKeyType}} ` + "`" + `json:"id" dc:"Created {{.StructNameLower}} ID"` + "`" + `
+		Id     {{.PrimaryKeyType}} ` + "`" + `json:"id" dc:"Created {{.StructNameCaseSnake}} ID"` + "`" + `
 	}
 )
 `
@@ -158,7 +158,7 @@ import (
 
 type (
 	DeleteReq struct {
-		g.Meta ` + "`" + `path:"/{{.StructNameLower}}/{id}" tags:"{{.StructName}}" method:"delete" summary:"Delete {{.StructNameLower}} by ID"` + "`" + `
+		g.Meta ` + "`" + `path:"/{{.StructNameCaseSnake}}/{id}" tags:"{{.StructName}}" method:"delete" summary:"Delete {{.StructNameCaseSnake}} by ID"` + "`" + `
 		Id     {{.PrimaryKeyType}} ` + "`" + `json:"id" v:"required" dc:"{{.StructName}} ID"` + "`" + `
 	}
 	DeleteRes struct {
@@ -183,7 +183,7 @@ import (
 
 type (
 	UpdateReq struct {
-		g.Meta ` + "`" + `path:"/{{.StructNameLower}}/{id}" tags:"{{.StructName}}" method:"put" summary:"Update {{.StructNameLower}}"` + "`" + `
+		g.Meta ` + "`" + `path:"/{{.StructNameCaseSnake}}/{id}" tags:"{{.StructName}}" method:"put" summary:"Update {{.StructNameCaseSnake}}"` + "`" + `
 		Id     {{.PrimaryKeyType}} ` + "`" + `json:"id" v:"required" dc:"{{.StructName}} ID"` + "`" + `
 {{.NonPrimaryFields}}
 	}
@@ -209,12 +209,12 @@ import (
 
 type (
 	GetOneReq struct {
-		g.Meta ` + "`" + `path:"/{{.StructNameLower}}/{id}" tags:"{{.StructName}}" method:"get" summary:"Get {{.StructNameLower}} by ID"` + "`" + `
+		g.Meta ` + "`" + `path:"/{{.StructNameCaseSnake}}/{id}" tags:"{{.StructName}}" method:"get" summary:"Get {{.StructNameCaseSnake}} by ID"` + "`" + `
 		Id     {{.PrimaryKeyType}} ` + "`" + `json:"id" v:"required" dc:"{{.StructName}} ID"` + "`" + `
 	}
 	GetOneRes struct {
 		g.Meta ` + "`" + `mime:"application/json" example:"string"` + "`" + `
-		*entity.{{.StructName}} ` + "`" + `json:"{{.StructNameLower}}" dc:"{{.StructName}} info"` + "`" + `
+		*entity.{{.StructName}} ` + "`" + `json:"{{.StructNameCaseSnake}}" dc:"{{.StructName}} info"` + "`" + `
 	}
 )
 `
@@ -235,7 +235,7 @@ import (
 
 type (
 	GetListReq struct {
-		g.Meta ` + "`" + `path:"/{{.StructNameLower}}/list" tags:"{{.StructName}}" method:"get" summary:"Get {{.StructNameLower}} list"` + "`" + `
+		g.Meta ` + "`" + `path:"/{{.StructNameCaseSnake}}/list" tags:"{{.StructName}}" method:"get" summary:"Get {{.StructNameCaseSnake}} list"` + "`" + `
 		Page   int ` + "`" + `d:"1" dc:"Page number"` + "`" + `
 		PageSize   int ` + "`" + `d:"10" v:"max:100" dc:"Page size"` + "`" + `
 		// TODO: Add other filter fields here
@@ -255,12 +255,12 @@ type (
 // Code generated and maintained by GoFrame CLI tool. DO NOT EDIT.
 // =================================================================================
 
-package {{.StructNameLower}}
+package {{.StructNameCaseSnake}}
 
 import (
 	"context"
 
-	"{{.ModuleName}}/api/{{.StructNameLower}}/v1"
+	"{{.ModuleName}}/api/{{.StructNameCaseSnake}}/v1"
 )
 
 type I{{.StructName}}V1 interface {
@@ -277,7 +277,7 @@ type I{{.StructName}}V1 interface {
 	content = gstr.ReplaceByMap(content, map[string]string{
 		"{{.PackageName}}":               packageName,
 		"{{.StructName}}":                structName,
-		"{{.StructNameLower}}":           structNameLower,
+		"{{.StructNameCaseSnake}}":       structNameCaseSnake,
 		"{{.PrimaryKeyType}}":            primaryKeyType,
 		"{{.ModuleName}}":                getModuleName(),
 		"{{.NonPrimaryFields}}":          strings.Join(nonPrimaryFieldReplacements, "\n"),

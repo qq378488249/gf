@@ -59,8 +59,8 @@ func (g *serviceGenerator) Generate(table *tableInfo, dir, packageName string, o
 
 func (g *serviceGenerator) generateContent(table *tableInfo, packageName string) string {
 	var (
-		structName      = table.StructName
-		structNameLower = strings.ToLower(structName)
+		structName          = table.StructName
+		structNameCaseSnake = gstr.CaseSnake(structName)
 	)
 
 	template := `// ================================================================================
@@ -72,20 +72,20 @@ package {{.PackageName}}
 
 import (
 	"context"
-	v1 "{{.ModuleName}}/api/{{.StructNameLower}}/v1"
+	v1 "{{.ModuleName}}/api/{{.StructNameCaseSnake}}/v1"
 )
 
 type (
 	I{{.StructName}} interface {
-		// Create creates a new {{.StructNameLower}} record
+		// Create creates a new {{.StructNameCaseSnake}} record
 		Create(ctx context.Context, req *v1.CreateReq) (*v1.CreateRes, error)
-		// Delete deletes {{.StructNameLower}} record by ID
+		// Delete deletes {{.StructNameCaseSnake}} record by ID
 		Delete(ctx context.Context, req *v1.DeleteReq) (*v1.DeleteRes, error)
-		// Update updates {{.StructNameLower}} record
+		// Update updates {{.StructNameCaseSnake}} record
 		Update(ctx context.Context, req *v1.UpdateReq) (*v1.UpdateRes, error)
-		// GetOne retrieves {{.StructNameLower}} record by ID
+		// GetOne retrieves {{.StructNameCaseSnake}} record by ID
 		GetOne(ctx context.Context, req *v1.GetOneReq) (*v1.GetOneRes, error)
-		// GetList retrieves {{.StructNameLower}} records with pagination
+		// GetList retrieves {{.StructNameCaseSnake}} records with pagination
 		GetList(ctx context.Context, req *v1.GetListReq) (*v1.GetListRes, error)
 	}
 )
@@ -109,10 +109,10 @@ func Register{{.StructName}}(i I{{.StructName}}) {
 	// Replace template variables
 	content := template
 	content = gstr.ReplaceByMap(content, map[string]string{
-		"{{.PackageName}}":     packageName,
-		"{{.StructName}}":      structName,
-		"{{.StructNameLower}}": structNameLower,
-		"{{.ModuleName}}":      getModuleName(),
+		"{{.PackageName}}":         packageName,
+		"{{.StructName}}":          structName,
+		"{{.StructNameCaseSnake}}": structNameCaseSnake,
+		"{{.ModuleName}}":          getModuleName(),
 	})
 
 	return content

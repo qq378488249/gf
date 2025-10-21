@@ -93,9 +93,9 @@ func (g *controllerGenerator) Generate(table *tableInfo, dir, packageName string
 
 func (g *controllerGenerator) generateActionContent(table *tableInfo, packageName, action string) string {
 	var (
-		structName      = table.StructName
-		structNameLower = strings.ToLower(structName)
-		varName         = gstr.CaseCamel(structName)
+		structName          = table.StructName
+		structNameCaseSnake = gstr.CaseSnake(structName)
+		varName             = gstr.CaseCamel(structName)
 	)
 
 	// Common header for all files
@@ -110,7 +110,7 @@ package {{.PackageName}}
 import (
 	"context"
 
-	"{{.ModuleName}}/api/{{.StructNameLower}}/v1"
+	"{{.ModuleName}}/api/{{.StructNameCaseSnake}}/v1"
 	"{{.ModuleName}}/internal/service"
 )
 
@@ -120,7 +120,7 @@ import (
 
 	switch action {
 	case "create":
-		actionContent = `// Create creates a new {{.StructNameLower}} record
+		actionContent = `// Create creates a new {{.StructNameCaseSnake}} record
 func (c *ControllerV1) Create(ctx context.Context, req *v1.CreateReq) (res *v1.CreateRes, err error) {
 	out, err := service.{{.StructName}}().Create(ctx, req)
 	if err != nil {
@@ -132,7 +132,7 @@ func (c *ControllerV1) Create(ctx context.Context, req *v1.CreateReq) (res *v1.C
 `
 
 	case "delete":
-		actionContent = `// Delete deletes a {{.StructNameLower}} record by ID
+		actionContent = `// Delete deletes a {{.StructNameCaseSnake}} record by ID
 func (c *ControllerV1) Delete(ctx context.Context, req *v1.DeleteReq) (res *v1.DeleteRes, err error) {
 	out, err := service.{{.StructName}}().Delete(ctx, req)
 	if err != nil {
@@ -144,7 +144,7 @@ func (c *ControllerV1) Delete(ctx context.Context, req *v1.DeleteReq) (res *v1.D
 `
 
 	case "update":
-		actionContent = `// Update updates a {{.StructNameLower}} record
+		actionContent = `// Update updates a {{.StructNameCaseSnake}} record
 func (c *ControllerV1) Update(ctx context.Context, req *v1.UpdateReq) (res *v1.UpdateRes, err error) {
 	out, err := service.{{.StructName}}().Update(ctx, req)
 	if err != nil {
@@ -156,7 +156,7 @@ func (c *ControllerV1) Update(ctx context.Context, req *v1.UpdateReq) (res *v1.U
 `
 
 	case "get_one":
-		actionContent = `// GetOne retrieves a {{.StructNameLower}} record by ID
+		actionContent = `// GetOne retrieves a {{.StructNameCaseSnake}} record by ID
 func (c *ControllerV1) GetOne(ctx context.Context, req *v1.GetOneReq) (res *v1.GetOneRes, err error) {
 	out, err := service.{{.StructName}}().GetOne(ctx, req)
 	if err != nil {
@@ -168,7 +168,7 @@ func (c *ControllerV1) GetOne(ctx context.Context, req *v1.GetOneReq) (res *v1.G
 `
 
 	case "get_list":
-		actionContent = `// GetList retrieves a list of {{.StructNameLower}} records
+		actionContent = `// GetList retrieves a list of {{.StructNameCaseSnake}} records
 func (c *ControllerV1) GetList(ctx context.Context, req *v1.GetListReq) (res *v1.GetListRes, err error) {
 	out, err := service.{{.StructName}}().GetList(ctx, req)
 	if err != nil {
@@ -185,11 +185,11 @@ func (c *ControllerV1) GetList(ctx context.Context, req *v1.GetListReq) (res *v1
 
 	// Replace template variables
 	content = gstr.ReplaceByMap(content, map[string]string{
-		"{{.PackageName}}":     packageName,
-		"{{.StructName}}":      structName,
-		"{{.StructNameLower}}": structNameLower,
-		"{{.VarName}}":         varName,
-		"{{.ModuleName}}":      getModuleName(),
+		"{{.PackageName}}":         packageName,
+		"{{.StructName}}":          structName,
+		"{{.StructNameCaseSnake}}": structNameCaseSnake,
+		"{{.VarName}}":             varName,
+		"{{.ModuleName}}":          getModuleName(),
 	})
 
 	return content
@@ -197,8 +197,8 @@ func (c *ControllerV1) GetList(ctx context.Context, req *v1.GetListReq) (res *v1
 
 func (g *controllerGenerator) generateNewContent(table *tableInfo, packageName string) string {
 	var (
-		structName      = table.StructName
-		structNameLower = strings.ToLower(structName)
+		structName          = table.StructName
+		structNameCaseSnake = gstr.CaseSnake(structName)
 	)
 
 	template := `// =================================================================================
@@ -208,12 +208,12 @@ func (g *controllerGenerator) generateNewContent(table *tableInfo, packageName s
 package {{.PackageName}}
 
 import (
-	"{{.ModuleName}}/api/{{.StructNameLower}}"
+	"{{.ModuleName}}/api/{{.StructNameCaseSnake}}"
 )
 
 type ControllerV1 struct{}
 
-func NewV1() {{.StructNameLower}}.I{{.StructName}}V1 {
+func NewV1() {{.StructNameCaseSnake}}.I{{.StructName}}V1 {
 	return &ControllerV1{}
 }
 `
@@ -221,10 +221,10 @@ func NewV1() {{.StructNameLower}}.I{{.StructName}}V1 {
 	// Replace template variables
 	content := template
 	content = gstr.ReplaceByMap(content, map[string]string{
-		"{{.PackageName}}":     packageName,
-		"{{.StructName}}":      structName,
-		"{{.StructNameLower}}": structNameLower,
-		"{{.ModuleName}}":      getModuleName(),
+		"{{.PackageName}}":         packageName,
+		"{{.StructName}}":          structName,
+		"{{.StructNameCaseSnake}}": structNameCaseSnake,
+		"{{.ModuleName}}":          getModuleName(),
 	})
 
 	return content

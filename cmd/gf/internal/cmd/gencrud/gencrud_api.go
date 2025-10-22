@@ -84,6 +84,7 @@ func (g *apiGenerator) generateActionContent(table *tableInfo, action string) st
 	var (
 		structName          = table.StructName
 		structNameCaseSnake = gstr.CaseSnake(structName)
+		structNameKebab     = strings.ReplaceAll(structNameCaseSnake, "_", "-")
 		packageName         = "v1"
 	)
 
@@ -133,7 +134,7 @@ import (
 
 type (
 	CreateReq struct {
-		g.Meta ` + "`" + `path:"/{{.StructNameCaseSnake}}" tags:"{{.StructName}}" method:"post" summary:"Create {{.StructNameCaseSnake}}"` + "`" + `
+		g.Meta ` + "`" + `path:"/{{.StructNameKebab}}" tags:"{{.StructName}}" method:"post" summary:"Create {{.StructName}}"` + "`" + `
 {{.NonPrimaryRequiredFields}}
 	}
 	CreateRes struct {
@@ -158,7 +159,7 @@ import (
 
 type (
 	DeleteReq struct {
-		g.Meta ` + "`" + `path:"/{{.StructNameCaseSnake}}/{id}" tags:"{{.StructName}}" method:"delete" summary:"Delete {{.StructNameCaseSnake}} by ID"` + "`" + `
+		g.Meta ` + "`" + `path:"/{{.StructNameKebab}}/{id}" tags:"{{.StructName}}" method:"delete" summary:"Delete {{.StructName}} by ID"` + "`" + `
 		Id     {{.PrimaryKeyType}} ` + "`" + `json:"id" v:"required" dc:"{{.StructName}} ID"` + "`" + `
 	}
 	DeleteRes struct {
@@ -183,7 +184,7 @@ import (
 
 type (
 	UpdateReq struct {
-		g.Meta ` + "`" + `path:"/{{.StructNameCaseSnake}}/{id}" tags:"{{.StructName}}" method:"put" summary:"Update {{.StructNameCaseSnake}}"` + "`" + `
+		g.Meta ` + "`" + `path:"/{{.StructNameKebab}}/{id}" tags:"{{.StructName}}" method:"put" summary:"Update {{.StructName}}"` + "`" + `
 		Id     {{.PrimaryKeyType}} ` + "`" + `json:"id" v:"required" dc:"{{.StructName}} ID"` + "`" + `
 {{.NonPrimaryFields}}
 	}
@@ -209,7 +210,7 @@ import (
 
 type (
 	GetOneReq struct {
-		g.Meta ` + "`" + `path:"/{{.StructNameCaseSnake}}/{id}" tags:"{{.StructName}}" method:"get" summary:"Get {{.StructNameCaseSnake}} by ID"` + "`" + `
+		g.Meta ` + "`" + `path:"/{{.StructNameKebab}}/{id}" tags:"{{.StructName}}" method:"get" summary:"Get {{.StructName}} by ID"` + "`" + `
 		Id     {{.PrimaryKeyType}} ` + "`" + `json:"id" v:"required" dc:"{{.StructName}} ID"` + "`" + `
 	}
 	GetOneRes struct {
@@ -235,7 +236,7 @@ import (
 
 type (
 	GetListReq struct {
-		g.Meta ` + "`" + `path:"/{{.StructNameCaseSnake}}/list" tags:"{{.StructName}}" method:"get" summary:"Get {{.StructNameCaseSnake}} list"` + "`" + `
+		g.Meta ` + "`" + `path:"/{{.StructNameKebab}}/list" tags:"{{.StructName}}" method:"get" summary:"Get {{.StructName}} list"` + "`" + `
 		Page   int ` + "`" + `d:"1" dc:"Page number"` + "`" + `
 		PageSize   int ` + "`" + `d:"10" v:"max:100" dc:"Page size"` + "`" + `
 		// TODO: Add other filter fields here
@@ -278,6 +279,7 @@ type I{{.StructName}}V1 interface {
 		"{{.PackageName}}":               packageName,
 		"{{.StructName}}":                structName,
 		"{{.StructNameCaseSnake}}":       structNameCaseSnake,
+		"{{.StructNameKebab}}":           structNameKebab,
 		"{{.PrimaryKeyType}}":            primaryKeyType,
 		"{{.ModuleName}}":                getModuleName(),
 		"{{.NonPrimaryFields}}":          strings.Join(nonPrimaryFieldReplacements, "\n"),
